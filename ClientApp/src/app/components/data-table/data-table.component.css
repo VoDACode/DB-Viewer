@@ -1,0 +1,14 @@
+input{
+    width: 100%;
+}
+.text-center,
+.actions{
+    text-align: center;
+}
+th.actions{
+    width: 200px;
+}
+button{
+    margin-left: 4px;
+    margin-right: 4px;
+}

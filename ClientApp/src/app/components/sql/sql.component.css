@@ -1,0 +1,15 @@
+.text-center {
+    text-align: center;
+}
+
+.setupbox {
+    border-radius: 5px;
+    margin: 5px;
+    padding: 5px;
+    border: 3px solid var(--bs-gray);
+}
+
+.result-box {
+    border: 3px solid var(--bs-dark-border-subtle);
+    border-radius: 5px;
+}

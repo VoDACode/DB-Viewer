@@ -1,0 +1,98 @@
+<div class="container">
+    <div class="row">
+        <div class="col align-self-start">
+            <div class="setupbox">
+                <div class="row">
+                    <div class="col text-center">
+                        <label class="col-form-label">Object type</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" id="formCheck-1" name="exec_type" checked (click)="selectType('procedure')">
+                            <label class="form-check-label" for="formCheck-1">Procedures</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" id="formCheck-2" name="exec_type" (click)="selectType('function')">
+                            <label class="form-check-label" for="formCheck-2">Functions</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col align-self-start text-center">
+            <div class="setupbox">
+                <div class="row">
+                    <div class="col">
+                        <label class="col-form-label">Object list</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <select>
+                            <option *ngFor="let target of targetObjects" value="{{target.name}}" (click)="selectName(target.name)">{{target.name}}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col align-self-center text-center">
+            <button class="btn btn-success btn-lg" type="button" (click)="run()">Run</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let param of onlyInParams">
+                            <td>{{param.name}}</td>
+                            <td>
+                                <input type="text" [(ngModel)]="param.value">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col text-center">
+            <h1>Result</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="result-box">
+                <div class="table-responsive" *ngFor="let table of result">
+                    <div class="col text-center">
+                        <h2>{{table.table}}</h2>
+                    </div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th *ngFor="let column of table.columns">{{column}}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let row of table.rows">
+                                <td *ngFor="let column of table.columns">{{row[column]}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

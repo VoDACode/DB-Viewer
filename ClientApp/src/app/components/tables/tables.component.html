@@ -1,0 +1,10 @@
+<div class="card">
+    <div class="card-header">
+        <ul class="nav nav-tabs card-header-tabs">
+            <li class="nav-item" *ngFor="let table of tableHeaders">
+                <a class="nav-link {{table.selected ? 'active' : ''}}" [routerLink]="['/tables', table.name]">{{table.name}}</a>
+            </li>
+        </ul>
+    </div>
+    <app-data-table [tablePattern]="tablePattern"></app-data-table>
+</div>
