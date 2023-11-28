@@ -69,6 +69,10 @@ namespace ssdb_lw_4.Tools
                 {
                     command.CommandText += $"{arg.Name} = @{arg.Name}_out OUTPUT, ";
                 }
+                else if(arg.Type == "varchar" || arg.Type == "nvarchar" || arg.Type == "date")
+                {
+                    command.CommandText += $"{arg.Name} = N'{arg.Value}', ";
+                }
                 else
                 {
                     command.CommandText += $"{arg.Name} = {arg.Value}, ";
@@ -90,7 +94,6 @@ namespace ssdb_lw_4.Tools
                 command.CommandText += ";";
             }
 
-
             using (var reader = command.ExecuteReader())
             {
                 resultTable.Load(reader);
@@ -111,7 +114,16 @@ namespace ssdb_lw_4.Tools
             foreach (var arg in arguments)
             {
                 if (arg.Mode == ParameterMode.IN)
-                    command.CommandText += $"{arg.Value}, ";
+                {
+                    if (arg.Type == "varchar" || arg.Type == "nvarchar" || arg.Type == "date")
+                    {
+                        command.CommandText += $"N'{arg.Value}', ";
+                    }
+                    else
+                    {
+                        command.CommandText += $"{arg.Value}, ";
+                    }
+                }
             }
             if (arguments.Count > 0)
                 command.CommandText = command.CommandText.Remove(command.CommandText.Length - 2);

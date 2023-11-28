@@ -79,9 +79,14 @@ namespace ssdb_lw_4.Controllers
                     }
                     args.Single(p => p.Name == arg.Name).Value = intValue;
                 }
-                else if (arg.Type == "varchar")
+                else if (arg.Type == "varchar" || arg.Type == "nvarchar")
                 {
                     args.Single(p => p.Name == arg.Name).Value = value;
+                }
+                else if (arg.Type == "date")
+                {
+                    var d = DateTime.Parse(value);
+                    args.Single(p => p.Name == arg.Name).Value = d.ToString("yyyy-MM-dd HH:mm:ss");
                 }
                 else if (arg.Type == "decimal")
                 {
@@ -154,9 +159,14 @@ namespace ssdb_lw_4.Controllers
                     }
                     args.Single(p => p.Name == arg.Name).Value = convertedValue;
                 }
-                else if (arg.Type == "varchar")
+                else if (arg.Type == "varchar" || arg.Type == "nvarchar")
                 {
                     args.Single(p => p.Name == arg.Name).Value = value;
+                }
+                else if (arg.Type == "date")
+                {
+                    var d = DateTime.Parse(value);
+                    args.Single(p => p.Name == arg.Name).Value = d.ToString();
                 }
                 else if (arg.Type == "decimal")
                 {
