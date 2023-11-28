@@ -189,7 +189,7 @@ namespace ssdb_lw_4.Controllers
                     return;
                 }
             }
-            var (result, print) = db.CallProcedure(func, args);
+            var (result, print) = db.CallFunction(func, args);
 
             Console.WriteLine(string.Join('\n', print));
 
