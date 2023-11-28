@@ -108,7 +108,9 @@ namespace ssdb_lw_4.Controllers
                 }
             }
 
-            var result = db.CallProcedure(proc, args);
+            var (result, print) = db.CallProcedure(proc, args);
+
+            Console.WriteLine(string.Join('\n', print));
 
             Response.StatusCode = 200;
             Response.ContentType = "application/xml";
@@ -187,8 +189,11 @@ namespace ssdb_lw_4.Controllers
                     return;
                 }
             }
+            var (result, print) = db.CallProcedure(func, args);
 
-            var result = db.CallFunction(func, args);
+            Console.WriteLine(string.Join('\n', print));
+
+
             Response.StatusCode = 200;
             Response.ContentType = "application/xml";
             result.WriteXml(Response.BodyWriter.AsStream());

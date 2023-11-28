@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using ssdb_lw_4.Models.SQL;
 using System.Data;
 
@@ -6,9 +7,9 @@ namespace ssdb_lw_4.Tools
 {
     public static class DbTool
     {
-        public static List<SqlParameter> GetParameters(this DbApp db, string entity)
+        public static List<Models.SQL.SqlParameter> GetParameters(this DbApp db, string entity)
         {
-            List<SqlParameter> result = new List<SqlParameter>();
+            List<Models.SQL.SqlParameter> result = new List<Models.SQL.SqlParameter>();
             var conn = db.Database.GetDbConnection();
 
             if (conn.State != ConnectionState.Open)
@@ -18,7 +19,7 @@ namespace ssdb_lw_4.Tools
             var reader = command.ExecuteReader();
             while (reader.Read())
             {
-                var obj = new SqlParameter();
+                var obj = new Models.SQL.SqlParameter();
                 obj.Position = reader.GetInt32(0);
                 var mode = reader.GetString(1);
                 if (mode.Equals("IN"))
@@ -42,12 +43,20 @@ namespace ssdb_lw_4.Tools
 
         public static List<string> GetProcedures(this DbApp db) => GetRoutines(db, "PROCEDURE");
 
-        public static DataTable CallProcedure(this DbApp db, string name, List<SqlCallParameter> arguments)
+        public static (DataTable, List<string>) CallProcedure(this DbApp db, string name, List<SqlCallParameter> arguments)
         {
-            var conn = db.Database.GetDbConnection();
+            var conn = db.Database.GetDbConnection() as SqlConnection;
             if (conn.State != ConnectionState.Open)
                 conn.Open();
             var command = conn.CreateCommand();
+
+            List<string> printMesaages = new List<string>();
+
+            conn.InfoMessage += (s, e) =>
+            {
+                printMesaages.Add(e.Message);
+            };
+
             DataTable resultTable = new DataTable($"{name}");
 
             List<SqlCallParameter> outputParams = arguments.Where(a => a.Mode != ParameterMode.IN).ToList();
@@ -69,7 +78,7 @@ namespace ssdb_lw_4.Tools
                 {
                     command.CommandText += $"{arg.Name} = @{arg.Name}_out OUTPUT, ";
                 }
-                else if(arg.Type == "varchar" || arg.Type == "nvarchar" || arg.Type == "date")
+                else if (arg.Type == "varchar" || arg.Type == "nvarchar" || arg.Type == "date")
                 {
                     command.CommandText += $"{arg.Name} = N'{arg.Value}', ";
                 }
@@ -78,7 +87,7 @@ namespace ssdb_lw_4.Tools
                     command.CommandText += $"{arg.Name} = {arg.Value}, ";
                 }
             }
-            if(arguments.Count > 0)
+            if (arguments.Count > 0)
                 command.CommandText = command.CommandText.Remove(command.CommandText.Length - 2);
             command.CommandText += ";";
 
@@ -99,15 +108,24 @@ namespace ssdb_lw_4.Tools
                 resultTable.Load(reader);
             }
 
-            return resultTable;
+            return (resultTable, printMesaages);
         }
 
-        public static DataTable CallFunction(this DbApp db, string name, List<SqlCallParameter> arguments)
+        public static (DataTable, List<string>) CallFunction(this DbApp db, string name, List<SqlCallParameter> arguments)
         {
-            var conn = db.Database.GetDbConnection();
+            var conn = db.Database.GetDbConnection() as SqlConnection;
             if (conn.State != ConnectionState.Open)
                 conn.Open();
             var command = conn.CreateCommand();
+
+            List<string> printMesaages = new List<string>();
+
+            conn.InfoMessage += (s, e) =>
+            {
+                printMesaages.Add(e.Message);
+            };
+
+
             DataTable resultTable = new DataTable($"{name}");
 
             command.CommandText += $"SELECT {(arguments.Any(p => p.Mode != ParameterMode.IN) ? "" : "* FROM")} dbo.{name}(";
@@ -134,7 +152,7 @@ namespace ssdb_lw_4.Tools
                 resultTable.Load(reader);
             }
 
-            return resultTable;
+            return (resultTable, printMesaages);
         }
 
         private static List<string> GetRoutines(DbApp db, string routingType)
