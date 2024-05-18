@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using ssdb_lw_4.Models;
 using ssdb_lw_4.Requests;
 
@@ -9,11 +8,9 @@ namespace ssdb_lw_4.Controllers
     [ApiController]
     public class ReaderController : TableController<ReaderModel, ReaderRequest>
     {
-        public ReaderController(DbApp db) : base(db)
+        public ReaderController(DbApp db, ILogger<ReaderController> logger) : base(db, logger)
         {
         }
-
-        protected override IQueryable<ReaderModel> LoadDate(DbSet<ReaderModel> table) => table.Include(p => p.Library);
 
         protected override ReaderModel ConvertToTable(ReaderRequest request) => request;
 
@@ -26,27 +23,18 @@ namespace ssdb_lw_4.Controllers
             table.LibraryId = request.LibraryId;
         }
 
-        protected override void BeforePost(DbSet<ReaderModel> table, ref ReaderModel record)
+        protected override void BeforePost(ref ReaderModel record)
         {
             var r = record;
-            var lib = db.Library.SingleOrDefault(p => p.Id == r.LibraryId);
-            if (lib is null)
+
+            string query = $"SELECT * FROM library WHERE id = {r.LibraryId}";
+            var (table, _) = db.RunSQL(query);
+            if (table.Rows.Count == 0)
             {
                 throw new Exception("Library not found");
             }
-            record.Library = lib;
-        }
 
-        [HttpGet("{id}/books")]
-        public async Task<IActionResult> GetBooks(int id)
-        {
-            var readers = await db.BooksReader
-                                    .Include(p => p.Book)
-                                    .Where(p => p.ReaderId == id)
-                                    .Select(p => p.Book)
-                                    .ToListAsync();
-
-            return Ok(readers);
+            record.Library = db.DataTableToObjects<LibraryModel>(table).First();
         }
     }
 }

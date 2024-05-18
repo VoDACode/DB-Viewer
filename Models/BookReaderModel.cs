@@ -1,4 +1,5 @@
-﻿using ssdb_lw_4.Interfaces;
+﻿using ssdb_lw_4.Attributes;
+using ssdb_lw_4.Interfaces;
 using ssdb_lw_4.Requests;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -13,13 +14,13 @@ namespace ssdb_lw_4.Models
         public int Id { get; set; }
         [Required]
         [Column("book_id", TypeName = "INT")]
-        [ForeignKey("FK_BookModel")]
         public int BookId { get; set; }
         [Required]
         [Column("reader_id", TypeName = "INT")]
-        [ForeignKey("FK_ReaderModel")]
         public int ReaderId { get; set; }
+        [Include]
         public BookModel Book { get; set; }
+        [Include]
         public ReaderModel Reader { get; set; }
 
         [Required]

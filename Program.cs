@@ -9,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddSqlServer<DbApp>(builder.Configuration["ConnectionStrings:DB"]);
+builder.Services.AddScoped<DbApp>();
 
 builder.Services.AddSwaggerGen(p =>
 {

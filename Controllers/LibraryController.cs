@@ -8,7 +8,7 @@ namespace ssdb_lw_4.Controllers
     [ApiController]
     public class LibraryController : TableController<LibraryModel, LibraryRequest>
     {
-        public LibraryController(DbApp db) : base(db)
+        public LibraryController(DbApp db, ILogger<LibraryController> logger) : base(db, logger)
         {
         }
 

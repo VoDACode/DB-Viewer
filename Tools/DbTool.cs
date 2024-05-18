@@ -1,6 +1,4 @@
-﻿using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using ssdb_lw_4.Models.SQL;
+﻿using ssdb_lw_4.Models.SQL;
 using System.Data;
 
 namespace ssdb_lw_4.Tools
@@ -10,7 +8,7 @@ namespace ssdb_lw_4.Tools
         public static List<Models.SQL.SqlParameter> GetParameters(this DbApp db, string entity)
         {
             List<Models.SQL.SqlParameter> result = new List<Models.SQL.SqlParameter>();
-            var conn = db.Database.GetDbConnection();
+            var conn = db.GetDbConnection();
 
             if (conn.State != ConnectionState.Open)
                 conn.Open();
@@ -35,6 +33,7 @@ namespace ssdb_lw_4.Tools
 
                 result.Add(obj);
             }
+            reader.Close();
 
             return result;
         }
@@ -45,9 +44,7 @@ namespace ssdb_lw_4.Tools
 
         public static (DataTable, List<string>) CallProcedure(this DbApp db, string name, List<SqlCallParameter> arguments)
         {
-            var conn = db.Database.GetDbConnection() as SqlConnection;
-            if (conn.State != ConnectionState.Open)
-                conn.Open();
+            var conn = db.GetDbConnection();
             var command = conn.CreateCommand();
 
             List<string> printMesaages = new List<string>();
@@ -113,9 +110,7 @@ namespace ssdb_lw_4.Tools
 
         public static (DataTable, List<string>) CallFunction(this DbApp db, string name, List<SqlCallParameter> arguments)
         {
-            var conn = db.Database.GetDbConnection() as SqlConnection;
-            if (conn.State != ConnectionState.Open)
-                conn.Open();
+            var conn = db.GetDbConnection();
             var command = conn.CreateCommand();
 
             List<string> printMesaages = new List<string>();
@@ -150,6 +145,7 @@ namespace ssdb_lw_4.Tools
             using (var reader = command.ExecuteReader())
             {
                 resultTable.Load(reader);
+                reader.Close();
             }
 
             return (resultTable, printMesaages);
@@ -159,7 +155,7 @@ namespace ssdb_lw_4.Tools
         {
             List<string> result = new List<string>();
 
-            var conn = db.Database.GetDbConnection();
+            var conn = db.GetDbConnection();
             if (conn.State != ConnectionState.Open)
                 conn.Open();
             var command = conn.CreateCommand();
@@ -169,6 +165,7 @@ namespace ssdb_lw_4.Tools
             {
                 result.Add(reader.GetString(0));
             }
+            reader.Close();
             return result;
         }
     }

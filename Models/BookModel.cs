@@ -1,4 +1,5 @@
-﻿using ssdb_lw_4.Interfaces;
+﻿using ssdb_lw_4.Attributes;
+using ssdb_lw_4.Interfaces;
 using ssdb_lw_4.Requests;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -13,8 +14,8 @@ namespace ssdb_lw_4.Models
         public int Id { get; set; }
         [Required]
         [Column("library_id", TypeName = "INT")]
-        [ForeignKey("LibraryModel")]
         public int LibraryId { get; set; }
+        [Include]
         public LibraryModel Library { get; set; }
         [Required]
         [Column("name", TypeName = "NVARCHAR")]
@@ -27,6 +28,9 @@ namespace ssdb_lw_4.Models
         [Required]
         [Column("year", TypeName = "INT")]
         public int Year { get; set; }
+
+        [ForeignKey("BookId")]
+        public virtual BookReaderModel BookReader { get; set; }
 
         public static implicit operator BookModel(BookRequest request)
         {

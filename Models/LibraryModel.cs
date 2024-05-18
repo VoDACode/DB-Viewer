@@ -25,6 +25,11 @@ namespace ssdb_lw_4.Models
         [Phone]
         public string Phone { get; set; }
 
+        [ForeignKey("LibraryId")]
+        public virtual BookModel Book { get; set; }
+        [ForeignKey("LibraryId")]
+        public virtual ReaderModel Reader { get; set; }
+
         public static implicit operator LibraryModel(LibraryRequest v)
         {
             return new LibraryModel
